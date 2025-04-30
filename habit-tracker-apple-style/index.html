@@ -3,32 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Habit Tracker</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Habit Tracker</n  <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f5f5f7;
-      color: #1d1d1f;
-    }
-    /* Apple style header */
-    .header-link:hover {
-      color: #0071e3;
-    }
-    /* Modal background */
-    .modal-bg {
-      background-color: rgba(0,0,0,0.4);
-    }
-    /* Scrollbar for habit list */
-    .habit-list::-webkit-scrollbar {
-      width: 6px;
-    }
-    .habit-list::-webkit-scrollbar-thumb {
-      background-color: #c7c7cc;
-      border-radius: 3px;
-    }
+    body { font-family: 'Inter', sans-serif; background-color: #f5f5f7; color: #1d1d1f; }
+    .header-link:hover { color: #0071e3; }
+    .modal-bg { background-color: rgba(0,0,0,0.4); }
+    .habit-list::-webkit-scrollbar { width: 6px; }
+    .habit-list::-webkit-scrollbar-thumb { background-color: #c7c7cc; border-radius: 3px; }
+    .timeline { height: 4px; background: #e5e7eb; position: relative; margin: 1rem 0; }
+    .timeline .marker { position: absolute; top: -6px; width: 12px; height: 12px; background: #3b82f6; border-radius: 50%; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -37,47 +24,19 @@
   <header class="bg-white shadow-md sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
       <a href="#" class="text-2xl font-semibold text-gray-900">HabitTracker</a>
-      <nav class="space-x-6 hidden md:flex">
+      <nav class="space-x-6 hidden md:flex header-nav">
         <a href="#" class="header-link text-gray-900 font-semibold hover:text-blue-600 transition">Home</a>
         <a href="#" class="header-link text-gray-900 font-semibold hover:text-blue-600 transition">Features</a>
         <a href="#" class="header-link text-gray-900 font-semibold hover:text-blue-600 transition">About</a>
       </nav>
-      <div class="space-x-4">
-        <button id="loginBtn" class="text-blue-600 font-semibold hover:underline focus:outline-none">Log In</button>
-        <button id="registerBtn" class="text-blue-600 font-semibold hover:underline focus:outline-none">Register</button>
+      <div class="space-x-4 header-auth">
+        <button id="loginBtn" class="text-blue-600 font-semibold hover:underline">Log In</button>
+        <button id="registerBtn" class="text-blue-600 font-semibold hover:underline">Register</button>
       </div>
     </div>
   </header>
 
-  <!-- Hero Section -->
-  <section class="bg-white py-20">
-    <div class="max-w-7xl mx-auto px-6 text-center">
-      <h1 class="text-5xl font-extrabold mb-4">Track Your Habits Effortlessly</h1>
-      <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">Build lasting habits and improve your life with personalized habit tracking.</p>
-      <button id="getStartedBtn" class="bg-blue-600 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-blue-700 transition">Get Started</button>
-    </div>
-  </section>
-
-  <!-- Features Section -->
-  <section class="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-3 gap-12">
-    <div class="bg-white rounded-xl shadow-md p-8 hover:shadow-lg transition">
-      <i class="fas fa-check-circle text-blue-600 text-5xl mb-6"></i>
-      <h2 class="text-2xl font-semibold mb-2">Easy Habit Management</h2>
-      <p class="text-gray-600">Add, edit, and track your habits with a simple and intuitive interface.</p>
-    </div>
-    <div class="bg-white rounded-xl shadow-md p-8 hover:shadow-lg transition">
-      <i class="fas fa-user-lock text-blue-600 text-5xl mb-6"></i>
-      <h2 class="text-2xl font-semibold mb-2">Secure Personal Account</h2>
-      <p class="text-gray-600">Register and log in to keep your habits private and accessible only to you.</p>
-    </div>
-    <div class="bg-white rounded-xl shadow-md p-8 hover:shadow-lg transition">
-      <i class="fas fa-chart-line text-blue-600 text-5xl mb-6"></i>
-      <h2 class="text-2xl font-semibold mb-2">Progress Tracking</h2>
-      <p class="text-gray-600">Visualize your progress and stay motivated with detailed habit statistics.</p>
-    </div>
-  </section>
-
-  <!-- Habit Tracker Dashboard (hidden until login) -->
+  <!-- Dashboard -->
   <section id="dashboard" class="max-w-7xl mx-auto px-6 py-16 hidden flex-col">
     <h2 class="text-4xl font-extrabold mb-8 text-center">Your Habit Tracker</h2>
     <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-8">
@@ -85,21 +44,21 @@
         <input type="text" id="habitInput" placeholder="Add a new habit" class="flex-grow border border-gray-300 rounded-l-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600" />
         <button type="submit" class="bg-blue-600 text-white px-6 rounded-r-md hover:bg-blue-700 transition">Add</button>
       </form>
-      <ul id="habitList" class="habit-list max-h-64 overflow-y-auto space-y-3 text-gray-800"></ul>
+      <ul id="habitList" class="habit-list max-h-64 overflow-y-auto space-y-6 text-gray-800"></ul>
     </div>
     <button id="logoutBtn" class="mt-8 bg-red-600 text-white px-6 py-3 rounded-full hover:bg-red-700 transition self-center">Log Out</button>
   </section>
 
-  <!-- Registration Modal -->
+  <!-- Register Modal -->
   <div id="registerModal" class="fixed inset-0 flex items-center justify-center modal-bg hidden z-50">
     <div class="bg-white rounded-xl shadow-lg max-w-md w-full p-8">
       <h3 class="text-2xl font-semibold mb-6 text-center">Register</h3>
       <form id="registerForm" class="space-y-4">
-        <input type="text" id="registerUsername" placeholder="Username" required class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600" />
-        <input type="password" id="registerPassword" placeholder="Password" required class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600" />
-        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition">Register</button>
+        <input type="text" id="registerUsername" placeholder="Username" required class="w-full border border-gray-300 rounded-md px-4 py-2" />
+        <input type="password" id="registerPassword" placeholder="Password" required class="w-full border border-gray-300 rounded-md px-4 py-2" />
+        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700">Register</button>
       </form>
-      <button id="closeRegister" class="mt-4 w-full text-center text-gray-600 hover:text-gray-900 focus:outline-none">Cancel</button>
+      <button id="closeRegister" class="mt-4 w-full text-center text-gray-600 hover:text-gray-900">Cancel</button>
     </div>
   </div>
 
@@ -108,178 +67,141 @@
     <div class="bg-white rounded-xl shadow-lg max-w-md w-full p-8">
       <h3 class="text-2xl font-semibold mb-6 text-center">Log In</h3>
       <form id="loginForm" class="space-y-4">
-        <input type="text" id="loginUsername" placeholder="Username" required class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600" />
-        <input type="password" id="loginPassword" placeholder="Password" required class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600" />
-        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition">Log In</button>
+        <input type="text" id="loginUsername" placeholder="Username" required class="w-full border border-gray-300 rounded-md px-4 py-2" />
+        <input type="password" id="loginPassword" placeholder="Password" required class="w-full border border-gray-300 rounded-md px-4 py-2" />
+        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700">Log In</button>
       </form>
-      <button id="closeLogin" class="mt-4 w-full text-center text-gray-600 hover:text-gray-900 focus:outline-none">Cancel</button>
+      <button id="closeLogin" class="mt-4 w-full text-center text-gray-600 hover:text-gray-900">Cancel</button>
     </div>
   </div>
 
   <script>
-    // Authentication and habit tracker logic
-    const registerBtn = document.getElementById('registerBtn');
-    const loginBtn = document.getElementById('loginBtn');
-    const registerModal = document.getElementById('registerModal');
-    const loginModal = document.getElementById('loginModal');
-    const closeRegister = document.getElementById('closeRegister');
-    const closeLogin = document.getElementById('closeLogin');
-    const registerForm = document.getElementById('registerForm');
-    const loginForm = document.getElementById('loginForm');
-    const dashboard = document.getElementById('dashboard');
-    const habitForm = document.getElementById('habitForm');
-    const habitInput = document.getElementById('habitInput');
-    const habitList = document.getElementById('habitList');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const getStartedBtn = document.getElementById('getStartedBtn');
-
-    // Show modals
-    registerBtn.addEventListener('click', () => {
-      registerModal.classList.remove('hidden');
-    });
-    loginBtn.addEventListener('click', () => {
-      loginModal.classList.remove('hidden');
-    });
-    closeRegister.addEventListener('click', () => {
-      registerModal.classList.add('hidden');
-    });
-    closeLogin.addEventListener('click', () => {
-      loginModal.classList.add('hidden');
-    });
-    getStartedBtn.addEventListener('click', () => {
-      loginModal.classList.remove('hidden');
-    });
-
-    // User data storage (simple localStorage)
-    function getUsers() {
-      return JSON.parse(localStorage.getItem('users') || '{}');
-    }
-    function saveUsers(users) {
-      localStorage.setItem('users', JSON.stringify(users));
-    }
-    function getCurrentUser() {
-      return localStorage.getItem('currentUser');
-    }
-    function setCurrentUser(username) {
-      localStorage.setItem('currentUser', username);
-    }
-    function clearCurrentUser() {
-      localStorage.removeItem('currentUser');
+    // Helper: get Monday of current week
+    function getWeekStart(date=new Date()) {
+      const d = new Date(date);
+      const day = d.getDay();
+      const diff = (day + 6) % 7;
+      d.setDate(d.getDate() - diff);
+      return d;
     }
 
-    // Habit storage per user
-    function getHabits(username) {
-      return JSON.parse(localStorage.getItem('habits_' + username) || '[]');
-    }
-    function saveHabits(username, habits) {
-      localStorage.setItem('habits_' + username, JSON.stringify(habits));
-    }
+    // User storage
+    function getUsers() { return JSON.parse(localStorage.getItem('users')||'{}'); }
+    function saveUsers(u) { localStorage.setItem('users',JSON.stringify(u)); }
+    function getCurrentUser() { return localStorage.getItem('currentUser'); }
+    function setCurrentUser(u) { localStorage.setItem('currentUser',u); }
+    function clearCurrentUser(){ localStorage.removeItem('currentUser'); }
 
-    // Render habits
-    function renderHabits() {
-      const username = getCurrentUser();
-      if (!username) return;
-      const habits = getHabits(username);
-      habitList.innerHTML = '';
-      habits.forEach((habit, index) => {
-        const li = document.createElement('li');
-        li.className = 'flex items-center justify-between bg-gray-100 rounded-md px-4 py-2';
-        li.innerHTML = `
-          <span>${habit}</span>
-          <button class="text-red-600 hover:text-red-800" data-index="${index}" aria-label="Delete habit">
-            <i class="fas fa-trash"></i>
-          </button>
-        `;
-        habitList.appendChild(li);
-      });
-      // Add delete event listeners
-      habitList.querySelectorAll('button').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const idx = e.currentTarget.getAttribute('data-index');
-          deleteHabit(idx);
+    // Habit storage (includes name, deadline, record map)
+    function getHabits(user){
+      const raw = JSON.parse(localStorage.getItem('habits_'+user)||'[]');
+      return raw.map(h=>typeof h==='string'?{name:h,deadline:'',record:{}}:h);
+    }
+    function saveHabits(user, habits){ localStorage.setItem('habits_'+user,JSON.stringify(habits)); }
+
+    // Render all habits
+    function renderHabits(){
+      const user=getCurrentUser(); if(!user)return;
+      const habits=getHabits(user);
+      const list=document.getElementById('habitList'); list.innerHTML='';
+      const weekStart=getWeekStart();
+      const labels=['L','M','M','J','V','S','D'];
+
+      habits.forEach((h,idx)=>{
+        const li=document.createElement('li'); li.className='bg-gray-100 rounded-md p-4';
+        // Header
+        const header=document.createElement('div'); header.className='flex justify-between items-center mb-4';
+        header.innerHTML=`<span class="font-semibold text-lg">${h.name}</span><button data-index="${idx}" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>`;
+        li.appendChild(header);
+        // Weekly row
+        const weekRow=document.createElement('div'); weekRow.className='flex justify-between mb-4';
+        labels.forEach((d,i)=>{
+          const date=new Date(weekStart); date.setDate(date.getDate()+i);
+          const iso=date.toISOString().slice(0,10);
+          const checked=!!h.record[iso];
+          const cell=document.createElement('label'); cell.className='flex flex-col items-center text-sm';
+          cell.innerHTML=`<input type="checkbox" data-date="${iso}" data-index="${idx}" ${checked?'checked':''}/><span>${d}</span>`;
+          weekRow.appendChild(cell);
         });
+        li.appendChild(weekRow);
+        // Deadline picker
+        const dl=document.createElement('div'); dl.className='mb-4';
+        dl.innerHTML=`<label class="block text-sm mb-1">Meta (fecha límite):</label><input type="date" min="2025-01-01" max="2025-12-31" value="${h.deadline}" data-index="${idx}" class="border border-gray-300 rounded-md px-3 py-2"/>`;
+        li.appendChild(dl);
+        // Timeline
+        const timeline=document.createElement('div'); timeline.className='timeline';
+        if(h.deadline){
+          const start=weekStart; const end=new Date(h.deadline);
+          const total=end-start, now=new Date()-start;
+          const pct=Math.min(Math.max(now/total,0),1)*100;
+          const marker=document.createElement('div'); marker.className='marker'; marker.style.left=pct+'%';
+          timeline.appendChild(marker);
+        }
+        li.appendChild(timeline);
+        // Chart
+        const canvas=document.createElement('canvas'); canvas.id=`chart-${idx}`; canvas.height=80;
+        li.appendChild(canvas);
+        list.appendChild(li);
+
+        // Events
+        header.querySelector('button').addEventListener('click',()=>{ habits.splice(idx,1); saveHabits(user,habits); renderHabits(); });
+        weekRow.querySelectorAll('input').forEach(cb=>{
+          cb.addEventListener('change',e=>{ const date=e.target.dataset.date; if(e.target.checked)h.record[date]=true;else delete h.record[date]; saveHabits(user,habits); drawChart(idx,h);} );
+        });
+        dl.querySelector('input').addEventListener('change',e=>{ h.deadline=e.target.value; saveHabits(user,habits); renderHabits(); });
+        drawChart(idx,h);
       });
     }
+
+    // Draw bar chart for habit
+    function drawChart(idx,habit){
+      const ctx=document.getElementById(`chart-${idx}`).getContext('2d');
+      const weekStart=getWeekStart();
+      const data=[];
+      for(let i=0;i<7;i++){ const d=new Date(weekStart); d.setDate(d.getDate()+i); data.push(habit.record[d.toISOString().slice(0,10)]?1:0); }
+      new Chart(ctx,{ type:'bar', data:{ labels:['L','M','M','J','V','S','D'], datasets:[{ data, label:'Cumplido' }] }, options:{ scales:{ y:{ beginAtZero:true, ticks:{ stepSize:1 }}}, plugins:{ legend:{ display:false }}} });
+    }
+
+    // Modal controls
+    const registerBtn=document.getElementById('registerBtn'), loginBtn=document.getElementById('loginBtn');
+    const registerModal=document.getElementById('registerModal'), loginModal=document.getElementById('loginModal');
+    document.getElementById('closeRegister').onclick=()=>registerModal.classList.add('hidden');
+    document.getElementById('closeLogin').onclick=()=>loginModal.classList.add('hidden');
+    registerBtn.onclick=()=>registerModal.classList.remove('hidden');
+    loginBtn.onclick=()=>loginModal.classList.remove('hidden');
+
+    // Register
+    document.getElementById('registerForm').addEventListener('submit',e=>{
+      e.preventDefault();
+      const u=document.getElementById('registerUsername').value.trim(), p=document.getElementById('registerPassword').value;
+      if(!u||!p)return alert('Usuario y contraseña requeridos');
+      const users=getUsers(); if(users[u])return alert('El usuario ya existe');
+      users[u]=p; saveUsers(users);
+      alert('Registro exitoso'); registerModal.classList.add('hidden'); e.target.reset();
+    });
+
+    // Login
+    document.getElementById('loginForm').addEventListener('submit',e=>{
+      e.preventDefault();
+      const u=document.getElementById('loginUsername').value.trim(), p=document.getElementById('loginPassword').value;
+      const users=getUsers(); if(!users[u]||users[u]!==p)return alert('Credenciales inválidas');
+      setCurrentUser(u); alert('Login exitoso'); loginModal.classList.add('hidden'); showDashboard();
+    });
 
     // Add habit
-    habitForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const habit = habitInput.value.trim();
-      if (!habit) return;
-      const username = getCurrentUser();
-      if (!username) return alert('Please log in to add habits.');
-      const habits = getHabits(username);
-      habits.push(habit);
-      saveHabits(username, habits);
-      habitInput.value = '';
-      renderHabits();
+    document.getElementById('habitForm').addEventListener('submit',e=>{
+      e.preventDefault(); const name=document.getElementById('habitInput').value.trim();
+      if(!name)return; const user=getCurrentUser(); if(!user)return alert('Inicia sesión');
+      const habits=getHabits(user); habits.push({name,deadline:'',record:{}}); saveHabits(user,habits); document.getElementById('habitInput').value=''; renderHabits();
     });
-
-    // Delete habit
-    function deleteHabit(index) {
-      const username = getCurrentUser();
-      if (!username) return;
-      const habits = getHabits(username);
-      habits.splice(index, 1);
-      saveHabits(username, habits);
-      renderHabits();
-    }
-
-    // Register user
-    registerForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const username = document.getElementById('registerUsername').value.trim();
-      const password = document.getElementById('registerPassword').value;
-      if (!username || !password) return alert('Please enter username and password.');
-      const users = getUsers();
-      if (users[username]) return alert('Username already exists.');
-      users[username] = password;
-      saveUsers(users);
-      alert('Registration successful! Please log in.');
-      registerModal.classList.add('hidden');
-      registerForm.reset();
-    });
-
-    // Login user
-    loginForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const username = document.getElementById('loginUsername').value.trim();
-      const password = document.getElementById('loginPassword').value;
-      if (!username || !password) return alert('Please enter username and password.');
-      const users = getUsers();
-      if (!users[username] || users[username] !== password) return alert('Invalid username or password.');
-      setCurrentUser(username);
-      alert('Login successful!');
-      loginModal.classList.add('hidden');
-      loginForm.reset();
-      showDashboard();
-    });
-
-    // Show dashboard after login
-    function showDashboard() {
-      const username = getCurrentUser();
-      if (!username) return;
-      document.querySelector('header nav').classList.add('hidden');
-      document.querySelector('header div.space-x-4').classList.add('hidden');
-      dashboard.classList.remove('hidden');
-      renderHabits();
-    }
 
     // Logout
-    logoutBtn.addEventListener('click', () => {
-      clearCurrentUser();
-      dashboard.classList.add('hidden');
-      document.querySelector('header nav').classList.remove('hidden');
-      document.querySelector('header div.space-x-4').classList.remove('hidden');
-      alert('Logged out successfully.');
-    });
+    document.getElementById('logoutBtn').addEventListener('click',()=>{ clearCurrentUser(); document.getElementById('dashboard').classList.add('hidden'); document.querySelector('.header-nav').classList.remove('hidden'); document.querySelector('.header-auth').classList.remove('hidden'); alert('Logout exitoso'); });
 
-    // On page load, check if user is logged in
-    window.addEventListener('load', () => {
-      if (getCurrentUser()) {
-        showDashboard();
-      }
-    });
+    // Show dashboard
+    function showDashboard(){ document.querySelector('.header-nav').classList.add('hidden'); document.querySelector('.header-auth').classList.add('hidden'); document.getElementById('dashboard').classList.remove('hidden'); renderHabits(); }
+
+    window.addEventListener('load',()=>{ if(getCurrentUser())showDashboard(); });
   </script>
 </body>
 </html>
