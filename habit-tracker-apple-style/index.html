@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Habit Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f5f5f7;
+      color: #1d1d1f;
+    }
+    /* Apple style header */
+    .header-link:hover {
+      color: #0071e3;
+    }
+    /* Modal background */
+    .modal-bg {
+      background-color: rgba(0,0,0,0.4);
+    }
+    /* Scrollbar for habit list */
+    .habit-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    .habit-list::-webkit-scrollbar-thumb {
+      background-color: #c7c7cc;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
+      <a href="#" class="text-2xl font-semibold text-gray-900">HabitTracker</a>
+      <nav class="space-x-6 hidden md:flex">
+        <a href="#" class="header-link text-gray-900 font-semibold hover:text-blue-600 transition">Home</a>
+        <a href="#" class="header-link text-gray-900 font-semibold hover:text-blue-600 transition">Features</a>
+        <a href="#" class="header-link text-gray-900 font-semibold hover:text-blue-600 transition">About</a>
+      </nav>
+      <div class="space-x-4">
+        <button id="loginBtn" class="text-blue-600 font-semibold hover:underline focus:outline-none">Log In</button>
+        <button id="registerBtn" class="text-blue-600 font-semibold hover:underline focus:outline-none">Register</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="bg-white py-20">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+      <h1 class="text-5xl font-extrabold mb-4">Track Your Habits Effortlessly</h1>
+      <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">Build lasting habits and improve your life with personalized habit tracking.</p>
+      <button id="getStartedBtn" class="bg-blue-600 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-blue-700 transition">Get Started</button>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-3 gap-12">
+    <div class="bg-white rounded-xl shadow-md p-8 hover:shadow-lg transition">
+      <i class="fas fa-check-circle text-blue-600 text-5xl mb-6"></i>
+      <h2 class="text-2xl font-semibold mb-2">Easy Habit Management</h2>
+      <p class="text-gray-600">Add, edit, and track your habits with a simple and intuitive interface.</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-md p-8 hover:shadow-lg transition">
+      <i class="fas fa-user-lock text-blue-600 text-5xl mb-6"></i>
+      <h2 class="text-2xl font-semibold mb-2">Secure Personal Account</h2>
+      <p class="text-gray-600">Register and log in to keep your habits private and accessible only to you.</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-md p-8 hover:shadow-lg transition">
+      <i class="fas fa-chart-line text-blue-600 text-5xl mb-6"></i>
+      <h2 class="text-2xl font-semibold mb-2">Progress Tracking</h2>
+      <p class="text-gray-600">Visualize your progress and stay motivated with detailed habit statistics.</p>
+    </div>
+  </section>
+
+  <!-- Habit Tracker Dashboard (hidden until login) -->
+  <section id="dashboard" class="max-w-7xl mx-auto px-6 py-16 hidden flex-col">
+    <h2 class="text-4xl font-extrabold mb-8 text-center">Your Habit Tracker</h2>
+    <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-8">
+      <form id="habitForm" class="flex mb-6">
+        <input type="text" id="habitInput" placeholder="Add a new habit" class="flex-grow border border-gray-300 rounded-l-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+        <button type="submit" class="bg-blue-600 text-white px-6 rounded-r-md hover:bg-blue-700 transition">Add</button>
+      </form>
+      <ul id="habitList" class="habit-list max-h-64 overflow-y-auto space-y-3 text-gray-800"></ul>
+    </div>
+    <button id="logoutBtn" class="mt-8 bg-red-600 text-white px-6 py-3 rounded-full hover:bg-red-700 transition self-center">Log Out</button>
+  </section>
+
+  <!-- Registration Modal -->
+  <div id="registerModal" class="fixed inset-0 flex items-center justify-center modal-bg hidden z-50">
+    <div class="bg-white rounded-xl shadow-lg max-w-md w-full p-8">
+      <h3 class="text-2xl font-semibold mb-6 text-center">Register</h3>
+      <form id="registerForm" class="space-y-4">
+        <input type="text" id="registerUsername" placeholder="Username" required class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+        <input type="password" id="registerPassword" placeholder="Password" required class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition">Register</button>
+      </form>
+      <button id="closeRegister" class="mt-4 w-full text-center text-gray-600 hover:text-gray-900 focus:outline-none">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="fixed inset-0 flex items-center justify-center modal-bg hidden z-50">
+    <div class="bg-white rounded-xl shadow-lg max-w-md w-full p-8">
+      <h3 class="text-2xl font-semibold mb-6 text-center">Log In</h3>
+      <form id="loginForm" class="space-y-4">
+        <input type="text" id="loginUsername" placeholder="Username" required class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+        <input type="password" id="loginPassword" placeholder="Password" required class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition">Log In</button>
+      </form>
+      <button id="closeLogin" class="mt-4 w-full text-center text-gray-600 hover:text-gray-900 focus:outline-none">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    // Authentication and habit tracker logic
+    const registerBtn = document.getElementById('registerBtn');
+    const loginBtn = document.getElementById('loginBtn');
+    const registerModal = document.getElementById('registerModal');
+    const loginModal = document.getElementById('loginModal');
+    const closeRegister = document.getElementById('closeRegister');
+    const closeLogin = document.getElementById('closeLogin');
+    const registerForm = document.getElementById('registerForm');
+    const loginForm = document.getElementById('loginForm');
+    const dashboard = document.getElementById('dashboard');
+    const habitForm = document.getElementById('habitForm');
+    const habitInput = document.getElementById('habitInput');
+    const habitList = document.getElementById('habitList');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const getStartedBtn = document.getElementById('getStartedBtn');
+
+    // Show modals
+    registerBtn.addEventListener('click', () => {
+      registerModal.classList.remove('hidden');
+    });
+    loginBtn.addEventListener('click', () => {
+      loginModal.classList.remove('hidden');
+    });
+    closeRegister.addEventListener('click', () => {
+      registerModal.classList.add('hidden');
+    });
+    closeLogin.addEventListener('click', () => {
+      loginModal.classList.add('hidden');
+    });
+    getStartedBtn.addEventListener('click', () => {
+      loginModal.classList.remove('hidden');
+    });
+
+    // User data storage (simple localStorage)
+    function getUsers() {
+      return JSON.parse(localStorage.getItem('users') || '{}');
+    }
+    function saveUsers(users) {
+      localStorage.setItem('users', JSON.stringify(users));
+    }
+    function getCurrentUser() {
+      return localStorage.getItem('currentUser');
+    }
+    function setCurrentUser(username) {
+      localStorage.setItem('currentUser', username);
+    }
+    function clearCurrentUser() {
+      localStorage.removeItem('currentUser');
+    }
+
+    // Habit storage per user
+    function getHabits(username) {
+      return JSON.parse(localStorage.getItem('habits_' + username) || '[]');
+    }
+    function saveHabits(username, habits) {
+      localStorage.setItem('habits_' + username, JSON.stringify(habits));
+    }
+
+    // Render habits
+    function renderHabits() {
+      const username = getCurrentUser();
+      if (!username) return;
+      const habits = getHabits(username);
+      habitList.innerHTML = '';
+      habits.forEach((habit, index) => {
+        const li = document.createElement('li');
+        li.className = 'flex items-center justify-between bg-gray-100 rounded-md px-4 py-2';
+        li.innerHTML = `
+          <span>${habit}</span>
+          <button class="text-red-600 hover:text-red-800" data-index="${index}" aria-label="Delete habit">
+            <i class="fas fa-trash"></i>
+          </button>
+        `;
+        habitList.appendChild(li);
+      });
+      // Add delete event listeners
+      habitList.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const idx = e.currentTarget.getAttribute('data-index');
+          deleteHabit(idx);
+        });
+      });
+    }
+
+    // Add habit
+    habitForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const habit = habitInput.value.trim();
+      if (!habit) return;
+      const username = getCurrentUser();
+      if (!username) return alert('Please log in to add habits.');
+      const habits = getHabits(username);
+      habits.push(habit);
+      saveHabits(username, habits);
+      habitInput.value = '';
+      renderHabits();
+    });
+
+    // Delete habit
+    function deleteHabit(index) {
+      const username = getCurrentUser();
+      if (!username) return;
+      const habits = getHabits(username);
+      habits.splice(index, 1);
+      saveHabits(username, habits);
+      renderHabits();
+    }
+
+    // Register user
+    registerForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const username = document.getElementById('registerUsername').value.trim();
+      const password = document.getElementById('registerPassword').value;
+      if (!username || !password) return alert('Please enter username and password.');
+      const users = getUsers();
+      if (users[username]) return alert('Username already exists.');
+      users[username] = password;
+      saveUsers(users);
+      alert('Registration successful! Please log in.');
+      registerModal.classList.add('hidden');
+      registerForm.reset();
+    });
+
+    // Login user
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const username = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      if (!username || !password) return alert('Please enter username and password.');
+      const users = getUsers();
+      if (!users[username] || users[username] !== password) return alert('Invalid username or password.');
+      setCurrentUser(username);
+      alert('Login successful!');
+      loginModal.classList.add('hidden');
+      loginForm.reset();
+      showDashboard();
+    });
+
+    // Show dashboard after login
+    function showDashboard() {
+      const username = getCurrentUser();
+      if (!username) return;
+      document.querySelector('header nav').classList.add('hidden');
+      document.querySelector('header div.space-x-4').classList.add('hidden');
+      dashboard.classList.remove('hidden');
+      renderHabits();
+    }
+
+    // Logout
+    logoutBtn.addEventListener('click', () => {
+      clearCurrentUser();
+      dashboard.classList.add('hidden');
+      document.querySelector('header nav').classList.remove('hidden');
+      document.querySelector('header div.space-x-4').classList.remove('hidden');
+      alert('Logged out successfully.');
+    });
+
+    // On page load, check if user is logged in
+    window.addEventListener('load', () => {
+      if (getCurrentUser()) {
+        showDashboard();
+      }
+    });
+  </script>
+</body>
+</html>
